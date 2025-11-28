@@ -1,34 +1,22 @@
-import unittest
+import pytest
 from calculator import calculate_expression
 
-class TestCalculatorIntegration(unittest.TestCase):
+class TestCalculatorIntegration:
     """
-    Integrációs tesztek, amelyek több metódus vagy komponens együttműködését tesztelik.
-    Itt a (a + b) / c kifejezés kiszámítását teszteljük.
+    Integrációs tesztek a magasabb szintű funkciókhoz,
+    ahol több Calculator metódus működik együtt.
     """
 
-    def test_simple_expression(self):
-        """Teszteli az (10 + 2) / 3 kifejezést, ami 4-et kell, hogy eredményezzen."""
-        a, b, c = 10, 2, 3
-        expected = 4.0
-        result = calculate_expression(a, b, c)
-        self.assertEqual(result, expected)
+    def test_calculate_expression_valid(self):
+        """Teszteli az (a + b) / c kifejezés sikeres kiszámítását."""
+        # Eredmény: (10 + 2) / 4 = 3.0
+        assert calculate_expression(10, 2, 4) == 3.0
 
-    def test_expression_with_negative_result(self):
-        """Teszteli a (-5 + 1) / 2 kifejezést, ami -2-t kell, hogy eredményezzen."""
-        a, b, c = -5, 1, 2
-        expected = -2.0
-        result = calculate_expression(a, b, c)
-        self.assertEqual(result, expected)
+        # Eredmény: (-5 + 10) / 2.5 = 5 / 2.5 = 2.0
+        assert calculate_expression(-5, 10, 2.5) == 2.0
 
-    def test_divide_by_zero_in_expression(self):
-        """
-        Teszteli, hogy a kifejezés nullával való osztása is hibát dob-e.
-        Itt az integrált hívási lánc ellenőrzi a hiba terjedését.
-        """
-        a, b, c = 5, 5, 0 # (5 + 5) / 0
-        with self.assertRaises(ValueError):
-            calculate_expression(a, b, c)
-
-if __name__ == '__main__':
-    unittest.main()
+    def test_calculate_expression_divide_by_zero(self):
+        """Teszteli, hogy a calculate_expression megfelelően kezeli-e a nullával osztást (c=0)."""
+        # A függvény a belső calc.divide metódus miatt ValueError-t dob
+        with pytest.raises(ValueError, match="Osztás nullával nem megengedett."):
+            calculate_expression(1, 1, 0)
