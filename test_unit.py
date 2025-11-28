@@ -1,39 +1,44 @@
-import unittest
-from calculator import Calculator
+# test_calculator.py
 
-class TestCalculatorUnit(unittest.TestCase):
+import pytest
+from calculator import Calculator, calculate_expression
+
+class TestCalculatorUnit:
     """
-    Egységtesztek a Calculator osztály metódusaihoz.
+    Unit tesztek a Calculator osztály alapvető műveleteihez.
     """
 
-    def setUp(self):
-        """Beállítás minden teszt előtt: létrehozzuk a Calculator példányt."""
-        self.calc = Calculator()
+    # Minden teszt előtt inicializálja a Calculator objektumot
+    @pytest.fixture
+    def calculator(self):
+        return Calculator()
 
-    def test_add_positive_numbers(self):
-        """Teszteli két pozitív szám összeadását."""
-        self.assertEqual(self.calc.add(5, 3), 8)
+    def test_add(self, calculator):
+        """Teszteli az összeadást pozitív és negatív számokkal."""
+        assert calculator.add(1, 2) == 3
+        assert calculator.add(-1, 5) == 4
+        assert calculator.add(0, 0) == 0
+        assert calculator.add(1.5, 2.5) == 4.0
 
-    def test_subtract_negative_result(self):
-        """Teszteli a kivonást negatív eredménnyel."""
-        self.assertEqual(self.calc.subtract(10, 15), -5)
+    def test_subtract(self, calculator):
+        """Teszteli a kivonást."""
+        assert calculator.subtract(5, 3) == 2
+        assert calculator.subtract(3, 5) == -2
+        assert calculator.subtract(10, 0) == 10
 
-    def test_multiply_by_zero(self):
-        """Teszteli a nullával való szorzást."""
-        self.assertEqual(self.calc.multiply(100, 0), 0)
+    def test_multiply(self, calculator):
+        """Teszteli a szorzást."""
+        assert calculator.multiply(2, 4) == 8
+        assert calculator.multiply(-2, 3) == -6
+        assert calculator.multiply(5, 0) == 0
 
-    def test_divide_standard(self):
-        """Teszteli a standard osztást."""
-        self.assertEqual(self.calc.divide(10, 2), 5.0)
+    def test_divide_success(self, calculator):
+        """Teszteli az érvényes osztást."""
+        assert calculator.divide(10, 2) == 5
+        assert calculator.divide(5, 2) == 2.5
+        assert calculator.divide(-6, 3) == -2
 
-    def test_divide_by_zero_exception(self):
-        """
-        Teszteli, hogy az osztás nullával kivételt dob-e (ValueError).
-        """
-        with self.assertRaises(ValueError) as context:
-            self.calc.divide(10, 0)
-        # Ellenőrizzük a kivétel üzenetét is
-        self.assertTrue('Osztás nullával nem megengedett.' in str(context.exception))
-
-if __name__ == '__main__':
-    unittest.main()
+    def test_divide_by_zero(self, calculator):
+        """Teszteli a nullával való osztás hibakezelését (ValueError)."""
+        with pytest.raises(ValueError, match="Osztás nullával nem megengedett."):
+            calculator.divide(10, 0)
