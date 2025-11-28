@@ -1,0 +1,27 @@
+# .github/workflows/unit_tests_on_pr.yml
+name: Unit Tesztek (PR)
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run_unit_tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Kód letöltése
+      uses: actions/checkout@v4
+
+    - name: Python környezet beállítása
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x' 
+
+    - name: Függőségek telepítése
+      run: pip install pytest
+
+    - name: Unit tesztek futtatása (Csak unit teszt osztály)
+      run: |
+        # futtatja a test_calculator.py-ban lévő TestCalculatorUnit osztályt
+        pytest -k TestCalculatorUnit
